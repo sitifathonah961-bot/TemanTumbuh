@@ -3192,15 +3192,22 @@ async function ttAfterAuth(user){
     // pendaftaran memerlukan konfirmasi email atau login dari perangkat lain.
     const pendingCode=(localStorage.getItem('ttPendingTeacherCode')||user.user_metadata?.invite_code||'').trim().toUpperCase();
     if(pendingCode && !profile.teacher_id){
+      // Hubungkan akun siswa berdasarkan kode undangan. RPC ini dipakai untuk
+      // setiap akun baru; tidak perlu membuat relasi atau SQL manual per siswa.
       const {error:joinError}=await ttSupabase.rpc('join_teacher_by_code',{p_invite_code:pendingCode});
       if(joinError){
         ttMessage('ttLoginError','Akun berhasil masuk, tetapi kode Guru BK belum terhubung: '+ttFriendlyError(joinError));
       }else{
         localStorage.removeItem('ttPendingTeacherCode');
-        const refreshed=await ttSupabase.from('profiles').select('id,full_name,role,approval_status,invite_code,teacher_id').eq('id',user.id).single();
-        if(!refreshed.error && refreshed.data) profile=refreshed.data;
       }
     }
+    // Selalu ambil ulang profil dari database setelah proses undangan,
+    // lalu perbarui profil aktif agar nama guru, chat, dan notifikasi memakai relasi terbaru.
+    const refreshed=await ttSupabase.from('profiles')
+      .select('id,full_name,role,approval_status,invite_code,teacher_id')
+      .eq('id',user.id).single();
+    if(!refreshed.error && refreshed.data) profile=refreshed.data;
+    ttCurrentProfile=profile;
     await ttLoadStudentTeacher(profile);
     const loaded=await ttLoadStudentData(user.id,profile.full_name||'');
     if(!loaded){ttActiveUser=null;await ttSupabase.auth.signOut();return;}
