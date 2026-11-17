@@ -3155,7 +3155,7 @@ async function ttRegister(){
   else localStorage.removeItem('ttPendingTeacherCode');
   const {data,error}=await ttSupabase.auth.signUp({
     email,password,
-    options:{emailRedirectTo:'https://sitifathonah961-bot.github.io/Study-Planner/',data:{full_name:nama,role,invite_code:role==='siswa'?code:null}}
+    options:{emailRedirectTo:'https://sitifathonah961-bot.github.io/TemanTumbuh/',data:{full_name:nama,role,invite_code:role==='siswa'?code:null}}
   });
   if(error){ttMessage('ttRegisterError',ttFriendlyError(error));return;}
   if(data.session){
