@@ -1247,14 +1247,24 @@ input:focus,textarea:focus,select:focus{
   </div>
 </div>
 
-<div id="ttAdmin" class="tt-hidden" style="min-height:100vh;padding:32px 18px;background:var(--bg,#f5f7f4);">
- <main style="max-width:760px;margin:40px auto;padding:28px;border-radius:22px;background:white;box-shadow:0 8px 30px rgba(0,0,0,.06);">
-  <div style="font-size:32px">🌱</div><h1 style="margin:8px 0;color:#315c49">Dashboard Admin TemanTumbuh</h1>
-  <p id="ttAdminGreeting">Selamat datang, Admin!</p>
-  <div style="margin:22px 0;padding:18px;border-radius:14px;background:#edf5ef;color:#315c49">
-   <strong>Anda masuk sebagai Administrator</strong>
-   <p style="margin:8px 0 0">Akun administrator terdeteksi dengan benar. Area ini terpisah dari dashboard Guru BK dan dashboard siswa.</p>
-  </div>
+<div id="ttAdmin" class="tt-hidden" style="min-height:100vh;padding:28px 16px;background:#f4f7f3;">
+ <main style="max-width:1000px;margin:0 auto;">
+  <header style="padding:24px;border-radius:20px;background:#315c49;color:white;margin-bottom:20px">
+   <div style="font-size:30px">🌱</div><h1 style="margin:8px 0">Dashboard Admin TemanTumbuh</h1>
+   <p id="ttAdminGreeting" style="margin:0">Selamat datang, Admin!</p>
+  </header>
+  <section style="background:white;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #183a2410">
+   <h2 style="margin:0 0 6px;color:#315c49">⏳ Persetujuan Guru BK</h2>
+   <p style="margin:0 0 14px;color:#647568">Periksa pendaftaran Guru BK, lalu pilih setujui atau tolak.</p>
+   <div id="ttAdminPending"><p>Memuat pendaftar...</p></div>
+  </section>
+  <section style="background:white;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #183a2410">
+   <h2 style="margin:0 0 6px;color:#315c49">✅ Guru BK Disetujui</h2>
+   <p style="margin:0 0 14px;color:#647568">Daftar akun Guru BK yang sudah disetujui.</p>
+   <div id="ttAdminApproved"><p>Memuat daftar...</p></div>
+  </section>
+  <p id="ttAdminError" role="status" style="color:#a33"></p>
+  <button class="tt-action tt-secondary" onclick="ttAdminLoad()">↻ Muat ulang</button>
   <button class="tt-action tt-secondary" onclick="ttLogout()">Keluar</button>
  </main>
 </div>
@@ -3185,6 +3195,27 @@ async function ttLogin(){
   if(error){ttMessage('ttLoginError',ttFriendlyError(error));return;}
   await ttAfterAuth(data.user);
 }
+async function ttAdminLoad(){
+ const pending=document.getElementById('ttAdminPending'),approved=document.getElementById('ttAdminApproved'),err=document.getElementById('ttAdminError');
+ if(!pending||!approved)return;
+ pending.innerHTML='<p>Memuat pendaftar...</p>';approved.innerHTML='<p>Memuat daftar...</p>';err.textContent='';
+ const {data:rows,error}=await ttSupabase.rpc('admin_list_pending_teachers');
+ if(error){pending.textContent='Daftar pendaftar belum dapat dimuat: '+ttFriendlyError(error);err.textContent='Pastikan akun ini memiliki role admin dan RPC admin_list_pending_teachers tersedia.';}
+ else if(!rows||!rows.length){pending.innerHTML='<p>Belum ada pendaftaran Guru BK yang menunggu persetujuan.</p>';}
+ else{pending.innerHTML=rows.map(t=>'<article style="padding:14px 0;border-bottom:1px solid #e5ece6"><strong>'+ttEscapeHtml(t.full_name||'Nama belum diisi')+'</strong><div style="font-size:13px;color:#68776b;margin:4px 0">Email: '+ttEscapeHtml(t.email||'Tidak tersedia')+'</div><div style="font-size:13px;color:#68776b">Daftar: '+ttEscapeHtml(t.created_at?new Date(t.created_at).toLocaleString('id-ID'):'—')+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="tt-action" onclick="ttAdminDecide(\''+t.id+'\',\'approved\')">Setujui</button><button class="tt-action tt-secondary" onclick="ttAdminDecide(\''+t.id+'\',\'rejected\')">Tolak</button></div></article>').join('');}
+ const {data:teachers,error:approvedError}=await ttSupabase.from('profiles').select('id,full_name,created_at').eq('role','guru').eq('approval_status','approved').order('full_name');
+ if(approvedError)approved.textContent='Daftar Guru BK disetujui belum dapat dimuat: '+ttFriendlyError(approvedError);
+ else if(!teachers||!teachers.length)approved.innerHTML='<p>Belum ada Guru BK yang disetujui.</p>';
+ else approved.innerHTML=teachers.map(t=>'<div style="padding:12px 0;border-bottom:1px solid #e5ece6"><strong>'+ttEscapeHtml(t.full_name||'Nama belum diisi')+'</strong><div style="font-size:13px;color:#68776b">Disetujui · '+ttEscapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString('id-ID'):'Tanggal tidak tersedia')+'</div></div>').join('');
+}
+async function ttAdminDecide(teacherId,decision){
+ const label=decision==='approved'?'menyetujui':'menolak';
+ if(!confirm('Yakin ingin '+label+' pendaftaran Guru BK ini?'))return;
+ const {error}=await ttSupabase.rpc('admin_set_teacher_approval',{p_teacher_id:teacherId,p_decision:decision});
+ if(error){document.getElementById('ttAdminError').textContent='Keputusan belum tersimpan: '+ttFriendlyError(error);return;}
+ await ttAdminLoad();
+}
+function ttEscapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function ttAfterAuth(user){
   let {data:profile,error}=await ttSupabase.from('profiles')
     .select('id,full_name,role,approval_status,invite_code,teacher_id')
@@ -3204,6 +3235,7 @@ async function ttAfterAuth(user){
     document.getElementById('ttTeacher').classList.add('tt-hidden');
     document.getElementById('ttAdmin').classList.remove('tt-hidden');
     document.getElementById('ttAdminGreeting').textContent='Selamat datang, '+(profile.full_name||'Admin')+'!';
+    await ttAdminLoad();
     return;
   }else if(profile.role==='siswa'){
     document.getElementById('ttAdmin').classList.add('tt-hidden');
