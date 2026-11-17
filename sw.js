@@ -1,4 +1,4 @@
-const CACHE_NAME = "teman-tumbuh-v15-admin";
+const CACHE_NAME = "teman-tumbuh-v16-refresh";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -30,15 +30,32 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(event.request).then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-        return response;
-      }).catch(() => caches.match("./index.html"));
-    })
-  );
+  event.respondWith((async () => {
+    const isAppDocument = event.request.mode === "navigate" ||
+      new URL(event.request.url).pathname.endsWith("/index.html");
+    if (isAppDocument) {
+      try {
+        const fresh = await fetch(event.request, { cache: "no-store" });
+        if (fresh && fresh.ok) {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(event.request, fresh.clone());
+        }
+        return fresh;
+      } catch (error) {
+        return (await caches.match(event.request)) || (await caches.match("./index.html"));
+      }
+    }
+    const cached = await caches.match(event.request);
+    if (cached) return cached;
+    try {
+      const response = await fetch(event.request);
+      if (response && response.ok) {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(event.request, response.clone());
+      }
+      return response;
+    } catch (error) {
+      return caches.match("./index.html");
+    }
+  })());
 });
