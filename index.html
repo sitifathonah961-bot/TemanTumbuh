@@ -1416,11 +1416,10 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
    <p style="margin:0 0 14px;color:#647568">Periksa pendaftaran Guru BK, lalu pilih setujui atau tolak.</p>
    <div id="ttAdminPending"><p>Memuat pendaftar...</p></div>
   </section>
-  <section style="background:white;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #183a2410">
-   <h2 style="margin:0 0 6px;color:#315c49">✅ Guru BK Disetujui</h2>
-   <p style="margin:0 0 14px;color:#647568">Daftar akun Guru BK yang sudah disetujui.</p>
-   <div id="ttAdminApproved"><p>Memuat daftar...</p></div>
-  </section>
+  <section style="background:white;border-radius:18px;padding:18px;margin-bottom:18px;box-shadow:0 4px 18px #183a2410"><h2 style="margin:0 0 12px;color:#315c49">📊 Ringkasan akun</h2><div id="ttAdminSummary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px"><p>Memuat...</p></div></section>
+  <section style="background:white;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #183a2410"><h2 style="margin:0 0 6px;color:#315c49">✅ Guru BK Aktif</h2><p style="margin:0 0 14px;color:#647568">Guru aktif dapat mengakses siswa yang terhubung.</p><div id="ttAdminApproved"><p>Memuat daftar...</p></div></section>
+  <section style="background:white;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #183a2410"><h2 style="margin:0 0 6px;color:#315c49">⏸️ Guru BK Nonaktif</h2><p style="margin:0 0 14px;color:#647568">Akun nonaktif tidak dapat mengakses data siswa maupun chat. Data tetap tersimpan.</p><div id="ttAdminInactive"><p>Memuat daftar...</p></div></section>
+  <section style="background:white;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #183a2410"><h2 style="margin:0 0 6px;color:#315c49">👥 Seluruh Siswa</h2><p style="margin:0 0 14px;color:#647568">Daftar siswa dan Guru BK yang terhubung beserta kode undangannya.</p><div id="ttAdminStudents"><p>Memuat daftar siswa...</p></div></section>
   <p id="ttAdminError" role="status" style="color:#a33"></p>
   <button class="tt-action tt-secondary" onclick="ttAdminLoad()">↻ Muat ulang</button>
   <button class="tt-action tt-secondary" onclick="ttLogout()">Keluar</button>
@@ -3354,17 +3353,28 @@ async function ttLogin(){
   await ttAfterAuth(data.user);
 }
 async function ttAdminLoad(){
- const pending=document.getElementById('ttAdminPending'),approved=document.getElementById('ttAdminApproved'),err=document.getElementById('ttAdminError');
+ const pending=document.getElementById('ttAdminPending'),approved=document.getElementById('ttAdminApproved'),inactive=document.getElementById('ttAdminInactive'),students=document.getElementById('ttAdminStudents'),summary=document.getElementById('ttAdminSummary'),err=document.getElementById('ttAdminError');
  if(!pending||!approved)return;
- pending.innerHTML='<p>Memuat pendaftar...</p>';approved.innerHTML='<p>Memuat daftar...</p>';err.textContent='';
- const {data:rows,error}=await ttSupabase.rpc('admin_list_pending_teachers');
- if(error){pending.textContent='Daftar pendaftar belum dapat dimuat: '+ttFriendlyError(error);err.textContent='Pastikan akun ini memiliki role admin dan RPC admin_list_pending_teachers tersedia.';}
- else if(!rows||!rows.length){pending.innerHTML='<p>Belum ada pendaftaran Guru BK yang menunggu persetujuan.</p>';}
- else{pending.innerHTML=rows.map(t=>'<article style="padding:14px 0;border-bottom:1px solid #e5ece6"><strong>'+ttEscapeHtml(t.full_name||'Nama belum diisi')+'</strong><div style="font-size:13px;color:#68776b;margin:4px 0">Email: '+ttEscapeHtml(t.email||'Tidak tersedia')+'</div><div style="font-size:13px;color:#68776b">Daftar: '+ttEscapeHtml(t.created_at?new Date(t.created_at).toLocaleString('id-ID'):'—')+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="tt-action" onclick="ttAdminDecide(\''+t.id+'\',\'approved\')">Setujui</button><button class="tt-action tt-secondary" onclick="ttAdminDecide(\''+t.id+'\',\'rejected\')">Tolak</button></div></article>').join('');}
- const {data:teachers,error:approvedError}=await ttSupabase.from('profiles').select('id,full_name,created_at').eq('role','guru').eq('approval_status','approved').order('full_name');
- if(approvedError)approved.textContent='Daftar Guru BK disetujui belum dapat dimuat: '+ttFriendlyError(approvedError);
- else if(!teachers||!teachers.length)approved.innerHTML='<p>Belum ada Guru BK yang disetujui.</p>';
- else approved.innerHTML=teachers.map(t=>'<div style="padding:12px 0;border-bottom:1px solid #e5ece6"><strong>'+ttEscapeHtml(t.full_name||'Nama belum diisi')+'</strong><div style="font-size:13px;color:#68776b">Disetujui · '+ttEscapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString('id-ID'):'Tanggal tidak tersedia')+'</div></div>').join('');
+ [pending,approved,inactive,students,summary].forEach(el=>{if(el)el.innerHTML='<p>Memuat...</p>';});err.textContent='';
+ const [pr,mr]=await Promise.all([ttSupabase.rpc('admin_list_pending_teachers'),ttSupabase.rpc('admin_get_management_dashboard')]);
+ if(pr.error){pending.textContent='Pendaftar gagal dimuat: '+ttFriendlyError(pr.error);}else if(!pr.data||!pr.data.length){pending.innerHTML='<p>Belum ada pendaftaran Guru BK.</p>';}else{
+ pending.innerHTML=pr.data.map(t=>'<article style="padding:14px 0;border-bottom:1px solid #e5ece6"><strong>'+ttEscapeHtml(t.full_name||'Nama belum diisi')+'</strong><div style="font-size:13px;color:#68776b;margin:4px 0">Email: '+ttEscapeHtml(t.email||'Tidak tersedia')+'</div><div style="font-size:13px;color:#68776b">Daftar: '+ttEscapeHtml(t.created_at?new Date(t.created_at).toLocaleString('id-ID'):'—')+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="tt-action" onclick="ttAdminDecide(\''+t.id+'\',\'approved\')">Setujui</button><button class="tt-action tt-secondary" onclick="ttAdminDecide(\''+t.id+'\',\'rejected\')">Tolak</button></div></article>').join('');
+ }
+ if(mr.error||!mr.data){err.textContent='Manajemen akun gagal dimuat: '+ttFriendlyError(mr.error||'Respons kosong')+'. Pastikan migrasi SQL admin sudah dijalankan.';[approved,inactive,students,summary].forEach(el=>el.innerHTML='<p>Data belum tersedia.</p>');return;}
+ const d=mr.data,s=d.summary||{};
+ summary.innerHTML=[['Guru BK',s.teachers_total],['Siswa',s.students_total],['Menunggu',s.teachers_pending],['Guru nonaktif',s.teachers_inactive]].map(x=>'<div style="background:#f1f6f2;border-radius:12px;padding:14px"><div style="font-size:25px;font-weight:700;color:#244d39">'+Number(x[1]||0)+'</div><div style="font-size:13px;color:#647568">'+x[0]+'</div></div>').join('');
+ const active=d.approved_teachers||[],off=d.inactive_teachers||[];
+ approved.innerHTML=active.length?active.map(t=>'<article style="padding:13px 0;border-bottom:1px solid #e5ece6"><strong>'+ttEscapeHtml(t.full_name||'Nama belum diisi')+'</strong><div style="font-size:13px;color:#68776b;margin:4px 0">Email: '+ttEscapeHtml(t.email||'—')+' · Kode: <b>'+ttEscapeHtml(t.invite_code||'—')+'</b></div><button class="tt-action tt-secondary" style="margin-top:9px" onclick="ttAdminSetTeacherActive(\''+t.id+'\',false)">Nonaktifkan akun</button></article>').join(''):'<p>Belum ada Guru BK aktif.</p>';
+ inactive.innerHTML=off.length?off.map(t=>'<article style="padding:13px 0;border-bottom:1px solid #e5ece6"><strong>'+ttEscapeHtml(t.full_name||'Nama belum diisi')+'</strong><div style="font-size:13px;color:#68776b;margin:4px 0">Email: '+ttEscapeHtml(t.email||'—')+' · Kode: <b>'+ttEscapeHtml(t.invite_code||'—')+'</b></div><button class="tt-action" style="margin-top:9px" onclick="ttAdminSetTeacherActive(\''+t.id+'\',true)">Aktifkan kembali</button></article>').join(''):'<p>Tidak ada Guru BK nonaktif.</p>';
+ const pupils=d.students||[];
+ students.innerHTML=pupils.length?'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="text-align:left;background:#f1f6f2"><th style="padding:10px">Nama siswa</th><th style="padding:10px">Email</th><th style="padding:10px">Guru BK</th><th style="padding:10px">Kode undangan</th></tr></thead><tbody>'+pupils.map(p=>'<tr style="border-top:1px solid #e5ece6"><td style="padding:10px">'+ttEscapeHtml(p.full_name||'—')+'</td><td style="padding:10px">'+ttEscapeHtml(p.email||'—')+'</td><td style="padding:10px">'+ttEscapeHtml(p.teacher_name||'Belum terhubung')+'</td><td style="padding:10px">'+ttEscapeHtml(p.teacher_invite_code||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<p>Belum ada akun siswa.</p>';
+}
+async function ttAdminSetTeacherActive(id,active){
+ const verb=active?'mengaktifkan kembali':'menonaktifkan',msg=active?'Guru akan dapat mengakses kembali siswa yang terhubung.':'Guru tidak dapat mengakses data siswa atau chat. Semua data dan riwayat tetap tersimpan.';
+ if(!confirm('Yakin ingin '+verb+' akun guru ini?\n\n'+msg))return;
+ const {error}=await ttSupabase.rpc('admin_set_teacher_active',{p_teacher_id:id,p_is_active:active});
+ if(error){document.getElementById('ttAdminError').textContent='Status akun belum berubah: '+ttFriendlyError(error);return;}
+ await ttAdminLoad();
 }
 async function ttAdminDecide(teacherId,decision){
  const label=decision==='approved'?'menyetujui':'menolak';
@@ -3376,10 +3386,14 @@ async function ttAdminDecide(teacherId,decision){
 function ttEscapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function ttAfterAuth(user){
   let {data:profile,error}=await ttSupabase.from('profiles')
-    .select('id,full_name,role,approval_status,invite_code,teacher_id')
+    .select('id,full_name,role,approval_status,invite_code,teacher_id,account_status')
     .eq('id',user.id).single();
   if(error||!profile){ttMessage('ttLoginError','Profil akun belum tersedia. Hubungi pengelola aplikasi.');await ttSupabase.auth.signOut();return;}
-  if(profile.role==='guru' && profile.approval_status!=='approved'){
+  if(profile.role==='guru' && profile.account_status==='inactive'){
+     ttMessage('ttLoginError','Akun Guru BK sedang dinonaktifkan oleh admin. Hubungi pengelola aplikasi.');
+     await ttSupabase.auth.signOut();return;
+   }
+   if(profile.role==='guru' && profile.approval_status!=='approved'){
     const status=profile.approval_status==='rejected'?'ditolak':'masih menunggu persetujuan pengelola';
     ttMessage('ttLoginError','Akun Guru BK '+status+'. Silakan coba lagi setelah ada persetujuan.');
     await ttSupabase.auth.signOut();return;
@@ -3413,7 +3427,7 @@ async function ttAfterAuth(user){
     // Selalu ambil ulang profil dari database setelah proses undangan,
     // lalu perbarui profil aktif agar nama guru, chat, dan notifikasi memakai relasi terbaru.
     const refreshed=await ttSupabase.from('profiles')
-      .select('id,full_name,role,approval_status,invite_code,teacher_id')
+      .select('id,full_name,role,approval_status,invite_code,teacher_id,account_status')
       .eq('id',user.id).single();
     if(!refreshed.error && refreshed.data) profile=refreshed.data;
     ttCurrentProfile=profile;
