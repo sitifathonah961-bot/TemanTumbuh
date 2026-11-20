@@ -1,4 +1,4 @@
-const CACHE_NAME = "teman-tumbuh-v16-refresh";
+const CACHE_NAME = "teman-tumbuh-v17-formal-blue";
 const APP_SHELL = [
   "./",
   "./index.html",
