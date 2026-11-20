@@ -1279,6 +1279,86 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
 }
 </style>
 
+
+<style id="temantumbuh-blue-final">
+:root{
+ --tg-bg:#f3f6fa!important;--tg-surface:#fff!important;--tg-lav:#397bb5!important;
+ --tg-lav-dark:#17365d!important;--tg-pink:#dceaf7!important;--tg-peach:#e5eef7!important;
+ --tg-blue:#b9d7f2!important;--tg-mint:#dceaf4!important;--tg-yellow:#eaf0f6!important;
+ --tg-text:#243447!important;--tg-muted:#64748b!important;--tg-border:#dce5ef!important;
+}
+html,body{background:#f3f6fa!important;color:#243447!important;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif!important}
+body,.app{background:#f3f6fa!important}
+.header{background:linear-gradient(120deg,#17365d,#28649a)!important;box-shadow:0 7px 22px rgba(23,54,93,.13)!important}
+.page-title h2,.card-title,.welcome h2,.info-card h3,.tip-box h3,.priority-title,.name-modal h2{color:#17365d!important}
+.page-title p,.card-desc,.welcome p,.info-card p,.tip-box p{color:#64748b!important}
+.card,.stat,.quick-card,.info-card,.task-item,.mission-item,.priority-item,.step-item{
+ background:#fff!important;border-color:#dce5ef!important;box-shadow:0 3px 12px rgba(23,54,93,.055)!important
+}
+.welcome,.info-card,.tip-box,.step-item,.focus-card,.garden-card{
+ background:#edf4fb!important;border:1px solid #d7e5f2!important;box-shadow:none!important
+}
+.welcome::after{content:""!important}
+.quick-card:nth-child(n){background:#fff!important}
+.quick-card strong{color:#17365d!important}
+.quick-card span,.progress-label,.stat span{color:#64748b!important}
+.garden-card::after{content:""!important}
+.progress-number,.stat strong,.tip-number{color:#245b91!important}
+.progress-bar{background:#dce7f2!important}
+.progress-fill{background:linear-gradient(90deg,#397bb5,#79a9d2)!important}
+.btn,.pwa-install{background:#245b91!important;color:#fff!important;box-shadow:none!important}
+.btn-secondary,.google-btn,.btn-soft,.tt-secondary{background:#eaf2fa!important;color:#17365d!important}
+.btn-danger{background:#fcebed!important;color:#a43c4b!important}
+input,textarea,select,.name-modal input{border-color:#dce5ef!important;color:#243447!important}
+input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shadow:0 0 0 3px rgba(57,123,181,.13)!important}
+.choice-option label,.scale-option label{border-color:#dce5ef!important;color:#33475b!important}
+.choice-option input:checked+label,.scale-option input:checked+label{background:#eaf2fa!important;border-color:#397bb5!important;color:#17365d!important}
+.pwa-install,.nav-btn.active{background:#eaf2fa!important;color:#245b91!important}
+.bottom-nav{border-color:#dce5ef!important;box-shadow:0 8px 24px rgba(23,54,93,.10)!important}
+.nav-btn{color:#718096!important}.nav-btn.active{color:#245b91!important}
+.name-overlay{background:rgba(23,54,93,.45)!important}
+.name-modal,.tt-box{background:#fff!important}
+.name-plant{background:#eaf2fa!important}
+.plan-check{accent-color:#245b91!important}
+.plan-delete{background:#fcebed!important;color:#a43c4b!important}
+.timer-face{color:#245b91!important}
+.timer-caption{color:#64748b!important}
+.tt-teacher-tabs button.active{background:#245b91!important;border-color:#245b91!important}
+.tt-chat-head{background:linear-gradient(120deg,#17365d,#397bb5)!important}
+.tt-chat-message{background:#eaf2fa!important;color:#243447!important}
+.tt-chat-message.mine{background:#dcecf9!important;color:#17365d!important}
+#ttAdmin header{background:linear-gradient(120deg,#17365d,#28649a)!important}
+#ttAdmin section h2{color:#17365d!important}
+#ttStudentTeacherInfo{background:#eaf2fa!important;color:#17365d!important}
+#ttStudentTeacherInfo span{color:#64748b!important}
+#ttStudentChatButton{background:#245b91!important;color:#fff!important}
+
+/* Menu cepat dibuat ringkas dan melebar, bukan kartu tinggi bertumpuk */
+.card:has(>.quick-grid){width:100%;grid-column:1/-1}
+.quick-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+.quick-card{
+ min-height:104px!important;height:100%!important;padding:14px 15px!important;
+ display:grid!important;grid-template-columns:38px minmax(0,1fr)!important;
+ grid-template-rows:auto auto!important;column-gap:10px!important;align-content:center!important;
+ align-items:center!important;border-radius:13px!important;text-align:left!important;
+}
+.quick-icon{grid-column:1;grid-row:1/3;font-size:23px!important;margin:0!important;text-align:center}
+.quick-card strong{grid-column:2;grid-row:1;font-size:13px!important;line-height:1.3!important}
+.quick-card span{grid-column:2;grid-row:2;font-size:11px!important;line-height:1.35!important;margin-top:3px!important}
+@media(min-width:900px){
+ .app{max-width:1280px!important}
+ .page.active>.card:has(>.quick-grid){grid-column:1/-1!important}
+ .quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:699px){
+ .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ .quick-card{min-height:90px!important;padding:11px 9px!important;grid-template-columns:30px minmax(0,1fr)!important;column-gap:7px!important}
+ .quick-icon{font-size:20px!important}
+ .quick-card strong{font-size:12px!important}
+ .quick-card span{font-size:10px!important}
+}
+</style>
+
 </head>
 
 <body>
