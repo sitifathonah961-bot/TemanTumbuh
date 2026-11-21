@@ -1414,6 +1414,40 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
 }
 </style>
 
+<style id="temantumbuh-wide-pages-v4">
+/* Paksa halaman belajar, refleksi, dan evaluasi memakai seluruh lebar layar laptop.
+   Halaman lain tetap mengikuti tata letak dashboard yang sudah ada. */
+@media (min-width:900px){
+  html,body{width:100%!important;min-width:0!important}
+  .app{width:100%!important;max-width:1600px!important;margin:0 auto!important}
+  #learnPage.page.active,#reflectPage.page.active,#evaluationPage.page.active{
+    display:block!important;width:100%!important;max-width:none!important;
+  }
+  #learnPage,#reflectPage,#evaluationPage{width:100%!important;max-width:none!important}
+  #learnPage>.page-title,#reflectPage>.page-title,#evaluationPage>.page-title{width:100%!important}
+  #learnPage>.card,#reflectPage>.card,#evaluationPage>.card{
+    display:grid!important;width:100%!important;max-width:none!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:18px!important;box-sizing:border-box!important;
+  }
+  #learnPage>.card>.card-title,#learnPage>.card>.card-desc,
+  #reflectPage>.card>.card-title,#reflectPage>.card>#savedReflection,
+  #evaluationPage>.card>.card-title,#evaluationPage>.card>.card-desc,
+  #evaluationPage>.card>.tt-evaluation-grid,
+  #evaluationPage>.card>.choice-list,#evaluationPage>.card>.eval-question,
+  #evaluationPage>.card>#evalSuggestion,#evaluationPage>.card>.btn,
+  #evaluationPage>.card>#savedEvaluation{grid-column:1/-1!important}
+  #learnPage .info-card,#reflectPage .tt-reflection-field,
+  #evaluationPage .tt-evaluation-field{width:100%!important;min-width:0!important;box-sizing:border-box!important}
+  #reflectPage .tt-reflection-field textarea,
+  #evaluationPage .tt-evaluation-field textarea{width:100%!important;min-height:145px!important;box-sizing:border-box!important}
+  #evaluationPage .tt-evaluation-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important}
+}
+@media(max-width:899px){
+  #learnPage>.card,#reflectPage>.card,#evaluationPage>.card{display:block!important;width:100%!important}
+  #evaluationPage .tt-evaluation-grid{display:block!important}
+}
+</style>
 </head>
 
 <body>
@@ -1978,6 +2012,22 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
       <div class="tt-evaluation-field">
         <label class="eval-question" for="evalAnswer8">Seberapa yakin kamu dapat menerapkan strategi pengelolaan waktu yang sudah dipelajari? Jelaskan alasanmu.</label>
         <textarea id="evalAnswer8" rows="4" placeholder="Jelaskan keyakinan dan hal yang masih kamu perlukan..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer9">Apa yang biasanya kamu lakukan ketika rencana belajar tidak berjalan sesuai jadwal?</label>
+        <textarea id="evalAnswer9" rows="4" placeholder="Ceritakan cara kamu menghadapi perubahan atau kegagalan rencana..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer10">Bagaimana keseimbangan antara belajar, istirahat, kegiatan di rumah, dan waktu pribadi selama ini?</label>
+        <textarea id="evalAnswer10" rows="4" placeholder="Ceritakan pembagian waktumu dan bagian yang perlu diperbaiki..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer11">Dukungan dari siapa yang paling kamu butuhkan saat mengalami kesulitan belajar, dan dukungan seperti apa?</label>
+        <textarea id="evalAnswer11" rows="4" placeholder="Ceritakan orang yang dapat membantu dan bentuk dukungan yang kamu harapkan..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer12">Tuliskan satu target perubahan yang ingin kamu capai dalam dua minggu ke depan. Bagaimana langkah konkretnya?</label>
+        <textarea id="evalAnswer12" rows="4" placeholder="Tuliskan target yang realistis dan langkah pertama yang akan kamu lakukan..."></textarea>
       </div>
     </div>
 
@@ -3144,7 +3194,7 @@ function nextTip(){
 
 function saveEvaluation(){
   const values = {};
-  for(let i=1;i<=8;i++){
+  for(let i=1;i<=12;i++){
     const answer=document.getElementById('evalAnswer'+i);
     values['q'+i]=answer?answer.value.trim():'';
   }
@@ -3171,7 +3221,7 @@ function displayEvaluation(){
 
   if(!saved){ box.innerHTML=''; return; }
 
-  for(let i=1;i<=5;i++){
+  for(let i=1;i<=12;i++){
     const field=document.getElementById('evalAnswer'+i);
     if(field && !field.value) field.value=saved['q'+i]||'';
   }
