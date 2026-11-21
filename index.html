@@ -3723,18 +3723,33 @@ async function ttOpenChat(pair){
 }
 function ttCloseChat(){document.getElementById('ttChatOverlay').classList.remove('show');ttChatPair=null;if(ttChatChannel){ttSupabase.removeChannel(ttChatChannel);ttChatChannel=null;}if(ttChatRefreshTimer){clearInterval(ttChatRefreshTimer);ttChatRefreshTimer=null;}}
 async function ttLoadChatMessages(){
- if(!ttChatPair||ttChatLoading)return;
+ if(!ttChatPair||ttChatLoading||!ttActiveUser)return;
  ttChatLoading=true;
  const pairAtStart=ttChatPair;
- await ttSupabase.from('tt_chat_messages').update({read_at:new Date().toISOString()}).eq('teacher_id',pairAtStart.teacher_id).eq('student_id',pairAtStart.student_id).neq('sender_id',ttActiveUser.id).is('read_at',null);
  const box=document.getElementById('ttChatMessages');
- const {data,error}=await ttSupabase.from('tt_chat_messages').select('id,sender_id,message,created_at,context_category').eq('teacher_id',ttChatPair.teacher_id).eq('student_id',ttChatPair.student_id).order('created_at',{ascending:true});
- if(error){box.innerHTML='<div class="tt-empty">Pesan belum dapat dimuat. '+ttEscape(error.message)+'</div>';ttChatLoading=false;return;}
- if(!data||!data.length){box.innerHTML='<div class="tt-empty">Belum ada pesan. Mulai percakapan dengan menyapa siswa atau Guru BK 🌱</div>';ttChatLoading=false;return;}
- box.innerHTML=data.map(m=>'<div class="tt-chat-message '+(m.sender_id===ttActiveUser.id?'mine':'')+'>'+(m.context_category?'<div class="tt-chat-context">↳ Tanggapan untuk: '+ttEscape(ttTeacherCategoryLabel(m.context_category))+'</div>':'')+ttEscape(m.message).replace(/\\n/g,'<br>')+'<small>'+(m.sender_id===ttActiveUser.id?'Anda':'Teman percakapan')+' · '+new Date(m.created_at).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'})+'</small></div>').join('');
- box.scrollTop=box.scrollHeight;
- ttChatLoading=false;
- ttRefreshUnreadCounts();
+ try{
+  const {data,error}=await ttSupabase.from('tt_chat_messages')
+   .select('id,sender_id,message,created_at,context_category')
+   .eq('teacher_id',pairAtStart.teacher_id)
+   .eq('student_id',pairAtStart.student_id)
+   .order('created_at',{ascending:true});
+  if(ttChatPair!==pairAtStart)return;
+  if(error){box.innerHTML='<div class="tt-empty">Riwayat pesan belum dapat dimuat. '+ttEscape(error.message)+'</div>';return;}
+  if(!data||!data.length){box.innerHTML='<div class="tt-empty">Belum ada pesan. Mulai percakapan dengan menyapa siswa atau Guru BK 🌱</div>';return;}
+  box.innerHTML=data.map(m=>'<div class="tt-chat-message '+(m.sender_id===ttActiveUser.id?'mine':'theirs')+'">'+
+   (m.context_category?'<div class="tt-chat-context">↳ Tanggapan untuk: '+ttEscape(ttTeacherCategoryLabel(m.context_category))+'</div>':'')+
+   ttEscape(m.message).replace(/\\n/g,'<br>')+
+   '<small>'+(m.sender_id===ttActiveUser.id?'Anda':'Teman percakapan')+' · '+new Date(m.created_at).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'})+'</small></div>').join('');
+  box.scrollTop=box.scrollHeight;
+  // Tanda baca pesan tidak boleh menghalangi pemuatan riwayat.
+  ttSupabase.from('tt_chat_messages').update({read_at:new Date().toISOString()})
+   .eq('teacher_id',pairAtStart.teacher_id).eq('student_id',pairAtStart.student_id)
+   .neq('sender_id',ttActiveUser.id).is('read_at',null)
+   .then(({error:readError})=>{if(readError)console.warn('Status baca chat belum diperbarui:',readError.message);});
+  ttRefreshUnreadCounts();
+ }catch(err){
+  if(ttChatPair===pairAtStart)box.innerHTML='<div class="tt-empty">Terjadi kendala saat memuat chat. '+ttEscape(err.message||err)+'</div>';
+ }finally{ttChatLoading=false;}
 }
 async function ttSendChat(event){
  event.preventDefault();
@@ -3765,5 +3780,35 @@ document.addEventListener('DOMContentLoaded',async()=>{
 <div class="tt-chat-messages" id="ttChatMessages"><div class="tt-empty">Memuat pesan...</div></div>
 <div class="tt-chat-hint">Pesan hanya terlihat oleh Guru BK dan siswa yang terhubung.</div>
 <form class="tt-chat-compose" onsubmit="ttSendChat(event)"><textarea id="ttChatInput" maxlength="3000" required placeholder="Tulis pesan..."></textarea><button type="submit">Kirim</button></form></div></div>
-</body>
+<style id="tt-blue-dashboard-chat-fix">
+/* Dashboard Guru BK: palet biru TemanTumbuh */
+#ttTeacher{background:linear-gradient(145deg,#eef5fc,#f7fbff)!important;color:#294765!important}
+#ttTeacher .tt-teacher-head,#ttTeacher .tt-teacher-content{border-color:#d8e6f3!important;box-shadow:0 8px 26px rgba(37,91,139,.08)!important}
+#ttTeacher .tt-teacher-brand,#ttTeacher .tt-teacher-head h1,#ttTeacher .tt-teacher-view h2,
+#ttTeacher .tt-teacher-stat b{color:#245b8d!important}
+#ttTeacher .tt-invite-panel{background:#edf5fc!important;border-color:#9dbbd7!important}
+#ttTeacher .tt-invite-panel strong{color:#245b8d!important}
+#ttTeacher .tt-teacher-tabs button.active{background:#286397!important;border-color:#286397!important;color:#fff!important}
+#ttTeacher .tt-teacher-tabs button{border-color:#d9e6f1!important;color:#496984!important}
+#ttTeacher .tt-teacher-stat{background:linear-gradient(135deg,#eef6fc,#f8fbff)!important;border-color:#dce9f4!important}
+#ttTeacher .tt-teacher-data{background:#f5f9fd!important;border-color:#dce8f2!important}
+#ttTeacher .tt-teacher-data summary{color:#315f85!important}
+#ttTeacher .tt-back{background:#e8f1f9!important;color:#285d8a!important}
+#ttTeacher .tt-chat-open{background:#286397!important}
+#ttTeacher .tt-empty{border-color:#d5e4f1!important;color:#66819a!important}
+
+/* Chat: satu baris untuk tiap pesan, gelembung kiri/kanan dan mudah dibaca */
+.tt-chat-box{border:1px solid #d8e6f2}
+.tt-chat-head{background:linear-gradient(120deg,#245b8d,#4386b8)!important}
+.tt-chat-messages{display:flex;flex-direction:column;align-items:stretch;gap:3px;background:#f3f7fb!important}
+.tt-chat-message{display:block;width:fit-content;max-width:min(82%,420px);margin:7px auto 7px 0!important;border:1px solid #e0e8ef;border-radius:16px 16px 16px 5px!important;background:#fff!important;color:#29445c!important;box-shadow:0 2px 7px rgba(34,72,105,.06)}
+.tt-chat-message.mine{align-self:flex-end;margin:7px 0 7px auto!important;border-color:#c7def0;background:#dceefa!important;color:#214d70!important;border-radius:16px 16px 5px 16px!important}
+.tt-chat-message.theirs{align-self:flex-start;margin:7px auto 7px 0!important}
+.tt-chat-message small{display:block;text-align:right;color:#66819a;line-height:1.4}
+.tt-chat-context{color:#286397!important;border-color:#d5e5f2!important}
+.tt-chat-compose{background:#fff;border-color:#dce7f0!important}
+.tt-chat-compose button{background:#286397!important}
+.tt-chat-hint{color:#698096!important}
+@media(max-width:480px){.tt-chat-overlay{padding:7px}.tt-chat-box{max-height:94vh}.tt-chat-message{max-width:88%}}
+</style>\n</body>
 </html>
