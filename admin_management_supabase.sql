@@ -55,11 +55,13 @@ grant execute on function public.admin_set_teacher_active(uuid,boolean) to authe
 
 -- Profiles: own profile remains visible; only active linked teachers see student profiles.
 drop policy if exists "Users and their counselors can view profiles" on public.profiles;
+drop policy if exists "Users and their active counselors can view profiles" on public.profiles;
 create policy "Users and their active counselors can view profiles" on public.profiles for select to authenticated
 using (id=(select auth.uid()) or (teacher_id=(select auth.uid()) and public.tt_is_active_approved_teacher((select auth.uid()))));
 
 -- Keep the existing student-owned ALL policy unchanged.
 drop policy if exists "Approved counselors can view linked student data" on public.student_data;
+drop policy if exists "Active approved counselors can view linked student data" on public.student_data;
 create policy "Active approved counselors can view linked student data" on public.student_data for select to authenticated
 using (
  exists(select 1 from public.profiles s where s.id=student_data.owner_id and s.teacher_id=(select auth.uid()) and s.role='siswa')
