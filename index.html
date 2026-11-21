@@ -1359,6 +1359,37 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
 }
 </style>
 
+<style id="temantumbuh-student-layout-v2">
+/* Layout rapi untuk laptop: materi dan form tidak menjadi kolom teks yang terlalu panjang */
+@media (min-width: 900px){
+  #learnPage .card,
+  #reflectPage .card,
+  #evaluationPage .card{padding:24px 26px;}
+  #learnPage .card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:stretch;}
+  #learnPage .card>.card-title,
+  #learnPage .card>.card-desc{grid-column:1/-1;margin-bottom:0;}
+  #learnPage .info-card{margin:0;padding:18px;min-width:0;}
+  #reflectPage .card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+  #reflectPage .card>.card-title,
+  #reflectPage .card>#savedReflection{grid-column:1/-1;}
+  .tt-reflection-field{min-width:0;background:#f8fafc;border:1px solid #e3eaf2;border-radius:14px;padding:15px;}
+  .tt-reflection-field textarea{min-height:120px;line-height:1.6;}
+  #evaluationPage .tt-evaluation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+  .tt-evaluation-field{min-width:0;background:#f8fafc;border:1px solid #e3eaf2;border-radius:14px;padding:15px;}
+  .tt-evaluation-field textarea{min-height:130px;line-height:1.6;}
+  #evaluationPage .tt-evaluation-field:last-child{grid-column:1/-1;}
+}
+@media (max-width: 899px){
+  .tt-reflection-field,.tt-evaluation-field{margin-bottom:14px;}
+  .tt-reflection-field textarea,.tt-evaluation-field textarea{min-height:105px;}
+}
+.tt-reflection-field .reflection-question,
+.tt-evaluation-field .eval-question{display:block;margin:0 0 9px;line-height:1.55;}
+.tt-reflection-field textarea,.tt-evaluation-field textarea{width:100%;resize:vertical;}
+#learnPage .info-card{height:100%;}
+#evaluationPage .choice-list{margin-bottom:16px;}
+#evaluationPage .form-note{margin-top:16px;}
+</style>
 </head>
 
 <body>
@@ -1772,44 +1803,20 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
 
     <div class="card-title">Refleksi Minggu Ini</div>
 
-    <div class="reflection-question">
-      1. Kebiasaan apa yang ingin kamu perbaiki?
-    </div>
-
-    <textarea
-      id="reflectionHabit"
-      placeholder="Contoh: Saya ingin mengurangi kebiasaan menunda tugas."
-    ></textarea>
+    <div class="tt-reflection-field"><label class="reflection-question" for="reflectionHabit">Kebiasaan apa yang ingin kamu perbaiki?</label>
+    <textarea id="reflectionHabit" rows="4" placeholder="Contoh: Saya ingin mengurangi kebiasaan menunda tugas."></textarea></div>
 
 
-    <div class="reflection-question">
-      2. Apa yang biasanya menghambatmu?
-    </div>
-
-    <textarea
-      id="reflectionObstacle"
-      placeholder="Contoh: Terlalu sering membuka media sosial."
-    ></textarea>
+    <div class="tt-reflection-field"><label class="reflection-question" for="reflectionObstacle">Apa yang biasanya menghambatmu?</label>
+    <textarea id="reflectionObstacle" rows="4" placeholder="Contoh: Terlalu sering membuka media sosial."></textarea></div>
 
 
-    <div class="reflection-question">
-      3. Strategi apa yang ingin kamu coba?
-    </div>
-
-    <textarea
-      id="reflectionStrategy"
-      placeholder="Contoh: Membuat daftar prioritas setiap pagi."
-    ></textarea>
+    <div class="tt-reflection-field"><label class="reflection-question" for="reflectionStrategy">Strategi apa yang ingin kamu coba?</label>
+    <textarea id="reflectionStrategy" rows="4" placeholder="Contoh: Membuat daftar prioritas setiap pagi."></textarea></div>
 
 
-    <div class="reflection-question">
-      4. Apa manfaat yang kamu harapkan?
-    </div>
-
-    <textarea
-      id="reflectionBenefit"
-      placeholder="Contoh: Tugas lebih cepat selesai dan saya tidak terlalu terburu-buru."
-    ></textarea>
+    <div class="tt-reflection-field"><label class="reflection-question" for="reflectionBenefit">Apa manfaat yang kamu harapkan?</label>
+    <textarea id="reflectionBenefit" rows="4" placeholder="Contoh: Tugas lebih cepat selesai dan saya tidak terlalu terburu-buru."></textarea></div>
 
     <button
       class="btn"
@@ -1906,58 +1913,36 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
 
   <div class="page-title">
     <h2>📝 Evaluasi</h2>
-    <p>Refleksikan pengalamanmu menggunakan TemanTumbuh.</p>
+    <p>Ceritakan pengalamanmu menggunakan TemanTumbuh dengan jawabanmu sendiri.</p>
   </div>
 
-  <div class="card">
+  <div class="card tt-evaluation-card">
     <div class="card-title">Evaluasi Penggunaan TemanTumbuh</div>
     <div class="card-desc">
-      Pilih angka 1–5 sesuai dengan pengalamanmu. Evaluasi ini tersimpan di perangkat dan juga dapat dikirim melalui Google Form untuk Guru BK.
+      Jawablah pertanyaan berikut dengan jujur dan jelas. Jawaban paragraf akan membantu Guru BK memahami pengalaman, perkembangan, serta kebutuhanmu.
     </div>
 
-    <div class="eval-question">1. Saya lebih memahami pentingnya manajemen waktu dalam kegiatan belajar.</div>
-    <div class="scale-row">
-      <div class="scale-option"><input type="radio" name="eval1" id="eval1_1" value="1"><label for="eval1_1">1</label></div>
-      <div class="scale-option"><input type="radio" name="eval1" id="eval1_2" value="2"><label for="eval1_2">2</label></div>
-      <div class="scale-option"><input type="radio" name="eval1" id="eval1_3" value="3"><label for="eval1_3">3</label></div>
-      <div class="scale-option"><input type="radio" name="eval1" id="eval1_4" value="4"><label for="eval1_4">4</label></div>
-      <div class="scale-option"><input type="radio" name="eval1" id="eval1_5" value="5"><label for="eval1_5">5</label></div>
-    </div>
-
-    <div class="eval-question">2. TemanTumbuh membantu saya menentukan tugas yang perlu diprioritaskan.</div>
-    <div class="scale-row">
-      <div class="scale-option"><input type="radio" name="eval2" id="eval2_1" value="1"><label for="eval2_1">1</label></div>
-      <div class="scale-option"><input type="radio" name="eval2" id="eval2_2" value="2"><label for="eval2_2">2</label></div>
-      <div class="scale-option"><input type="radio" name="eval2" id="eval2_3" value="3"><label for="eval2_3">3</label></div>
-      <div class="scale-option"><input type="radio" name="eval2" id="eval2_4" value="4"><label for="eval2_4">4</label></div>
-      <div class="scale-option"><input type="radio" name="eval2" id="eval2_5" value="5"><label for="eval2_5">5</label></div>
-    </div>
-
-    <div class="eval-question">3. Fitur Break It Down membantu saya memecah tugas besar menjadi langkah-langkah yang lebih kecil.</div>
-    <div class="scale-row">
-      <div class="scale-option"><input type="radio" name="eval3" id="eval3_1" value="1"><label for="eval3_1">1</label></div>
-      <div class="scale-option"><input type="radio" name="eval3" id="eval3_2" value="2"><label for="eval3_2">2</label></div>
-      <div class="scale-option"><input type="radio" name="eval3" id="eval3_3" value="3"><label for="eval3_3">3</label></div>
-      <div class="scale-option"><input type="radio" name="eval3" id="eval3_4" value="4"><label for="eval3_4">4</label></div>
-      <div class="scale-option"><input type="radio" name="eval3" id="eval3_5" value="5"><label for="eval3_5">5</label></div>
-    </div>
-
-    <div class="eval-question">4. Setelah menggunakan TemanTumbuh, saya lebih terdorong untuk mulai mengerjakan tugas dan mengurangi kebiasaan menunda.</div>
-    <div class="scale-row">
-      <div class="scale-option"><input type="radio" name="eval4" id="eval4_1" value="1"><label for="eval4_1">1</label></div>
-      <div class="scale-option"><input type="radio" name="eval4" id="eval4_2" value="2"><label for="eval4_2">2</label></div>
-      <div class="scale-option"><input type="radio" name="eval4" id="eval4_3" value="3"><label for="eval4_3">3</label></div>
-      <div class="scale-option"><input type="radio" name="eval4" id="eval4_4" value="4"><label for="eval4_4">4</label></div>
-      <div class="scale-option"><input type="radio" name="eval4" id="eval4_5" value="5"><label for="eval4_5">5</label></div>
-    </div>
-
-    <div class="eval-question">5. TemanTumbuh bermanfaat sebagai media pendukung layanan Bimbingan dan Konseling.</div>
-    <div class="scale-row">
-      <div class="scale-option"><input type="radio" name="eval5" id="eval5_1" value="1"><label for="eval5_1">1</label></div>
-      <div class="scale-option"><input type="radio" name="eval5" id="eval5_2" value="2"><label for="eval5_2">2</label></div>
-      <div class="scale-option"><input type="radio" name="eval5" id="eval5_3" value="3"><label for="eval5_3">3</label></div>
-      <div class="scale-option"><input type="radio" name="eval5" id="eval5_4" value="4"><label for="eval5_4">4</label></div>
-      <div class="scale-option"><input type="radio" name="eval5" id="eval5_5" value="5"><label for="eval5_5">5</label></div>
+    <div class="tt-evaluation-grid">
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer1">Apa perubahan yang kamu rasakan dalam memahami dan mengatur waktu belajar setelah menggunakan TemanTumbuh?</label>
+        <textarea id="evalAnswer1" rows="4" placeholder="Ceritakan perubahan yang kamu rasakan..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer2">Bagaimana kamu menentukan prioritas dan menyelesaikan tugas-tugasmu saat ini?</label>
+        <textarea id="evalAnswer2" rows="4" placeholder="Ceritakan cara kamu mengatur prioritas..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer3">Fitur atau kegiatan apa yang paling membantu proses belajarmu? Jelaskan alasannya.</label>
+        <textarea id="evalAnswer3" rows="4" placeholder="Sebutkan fitur yang membantu dan alasannya..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer4">Apa hambatan yang masih kamu alami ketika mengatur waktu, memulai tugas, atau menjaga konsistensi belajar?</label>
+        <textarea id="evalAnswer4" rows="4" placeholder="Ceritakan hambatan yang masih kamu alami..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer5">Dukungan seperti apa yang kamu harapkan dari Guru BK agar pengelolaan waktu dan kegiatan belajarmu menjadi lebih baik?</label>
+        <textarea id="evalAnswer5" rows="4" placeholder="Tuliskan dukungan yang kamu butuhkan..."></textarea>
+      </div>
     </div>
 
     <div class="eval-question">Fitur TemanTumbuh mana yang paling membantu kamu?</div>
@@ -1971,26 +1956,16 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
       <label class="choice-option"><input type="radio" name="evalFeature" value="Reflection"> Reflection</label>
     </div>
 
-    <div class="eval-question">Apa kesulitan yang masih kamu rasakan dalam mengatur waktu atau menyelesaikan tugas?</div>
-    <textarea id="evalDifficulty" placeholder="Tulis jawabanmu di sini..."></textarea>
-
-    <div class="eval-question">Menurut kamu, dukungan atau layanan BK apa yang masih kamu butuhkan terkait belajar dan manajemen waktu?</div>
-    <textarea id="evalNeed" placeholder="Tulis jawabanmu di sini..."></textarea>
-
-    <div class="eval-question">Apa saran kamu untuk pengembangan TemanTumbuh agar lebih membantu?</div>
-    <textarea id="evalSuggestion" placeholder="Tulis saranmu di sini..."></textarea>
+    <div class="eval-question">Apa saran tambahanmu untuk pengembangan TemanTumbuh?</div>
+    <textarea id="evalSuggestion" rows="4" placeholder="Tuliskan saran atau masukanmu..."></textarea>
 
     <button class="btn" style="width:100%;margin-top:12px;" onclick="saveEvaluation()">💾 Simpan Evaluasi di Perangkat</button>
-
     <div id="savedEvaluation" class="saved-reflection"></div>
 
     <div class="form-note">
       📋 Untuk mengirim evaluasi resmi kepada Guru BK, gunakan tombol di bawah. Jawaban yang dikirim melalui Google Form akan tercatat di Google Sheets yang terhubung dengan form.
     </div>
-
-    <button class="btn google-btn" onclick="openGoogleEvaluation()">
-      📋 Isi/Kirim Evaluasi ke Guru BK
-    </button>
+    <button class="btn google-btn" onclick="openGoogleEvaluation()">📋 Isi/Kirim Evaluasi ke Guru BK</button>
   </div>
 </section>
 
@@ -3133,27 +3108,22 @@ function nextTip(){
 
 function saveEvaluation(){
   const values = {};
-
   for(let i=1;i<=5;i++){
-    const selected = document.querySelector('input[name="eval'+i+'"]:checked');
-    values['q'+i] = selected ? selected.value : '';
+    const answer=document.getElementById('evalAnswer'+i);
+    values['q'+i]=answer?answer.value.trim():'';
   }
-
-  const feature = document.querySelector('input[name="evalFeature"]:checked');
-
-  const data = {
+  const feature=document.querySelector('input[name="evalFeature"]:checked');
+  const data={
     ...values,
-    feature: feature ? feature.value : '',
-    difficulty: document.getElementById('evalDifficulty').value.trim(),
-    need: document.getElementById('evalNeed').value.trim(),
-    suggestion: document.getElementById('evalSuggestion').value.trim(),
-    savedAt: new Date().toLocaleString('id-ID')
+    feature:feature?feature.value:'',
+    difficulty:values.q4,
+    need:values.q5,
+    suggestion:document.getElementById('evalSuggestion').value.trim(),
+    savedAt:new Date().toLocaleString('id-ID')
   };
-
-  localStorage.setItem('taskGardenEvaluation', JSON.stringify(data));
+  localStorage.setItem('taskGardenEvaluation',JSON.stringify(data));
   displayEvaluation();
-
-  alert('Evaluasi tersimpan di perangkat. 🌱');
+  alert('Evaluasi tersimpan. Jawabanmu dapat dibaca oleh Guru BK. 🌱');
 }
 
 function displayEvaluation(){
@@ -3163,9 +3133,17 @@ function displayEvaluation(){
 
   if(!box) return;
 
-  if(!saved){
-    box.innerHTML = '';
-    return;
+  if(!saved){ box.innerHTML=''; return; }
+
+  for(let i=1;i<=5;i++){
+    const field=document.getElementById('evalAnswer'+i);
+    if(field && !field.value) field.value=saved['q'+i]||'';
+  }
+  const suggestion=document.getElementById('evalSuggestion');
+  if(suggestion && !suggestion.value) suggestion.value=saved.suggestion||'';
+  if(saved.feature){
+    const option=document.querySelector('input[name="evalFeature"][value="'+CSS.escape(saved.feature)+'"]');
+    if(option) option.checked=true;
   }
 
   box.innerHTML =
