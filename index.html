@@ -1151,6 +1151,64 @@ input:focus,textarea:focus,select:focus{
 .nav-btn{font-size:9px!important;min-width:0;white-space:nowrap}
 .nav-icon{font-size:17px!important}
 @media(max-width:360px){.nav-btn{font-size:8px!important}.nav-icon{font-size:15px!important}.timer-face{font-size:42px}}
+
+/* FIX: kartu rencana tetap rapi saat checkbox selesai dicentang.
+   Selector khusus mengalahkan aturan input global yang sebelumnya
+   membuat checkbox melebar memenuhi seluruh kartu. */
+#plannerPage .study-plan-item{
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr) auto;
+  align-items:start;
+  gap:10px;
+  width:100%;
+  min-width:0;
+}
+#plannerPage .study-plan-item input.plan-check{
+  display:block;
+  width:20px !important;
+  min-width:20px !important;
+  max-width:20px;
+  height:20px;
+  padding:0;
+  margin:2px 0 0;
+  flex:0 0 20px;
+  accent-color:#9279c5;
+}
+#plannerPage .study-plan-item .plan-main{
+  min-width:0;
+  width:100%;
+  overflow-wrap:anywhere;
+}
+#plannerPage .study-plan-item .plan-name{
+  line-height:1.45;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+#plannerPage .study-plan-item .plan-meta{
+  display:block;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+#plannerPage .study-plan-item .plan-delete{
+  justify-self:end;
+  align-self:start;
+  flex-shrink:0;
+  white-space:nowrap;
+  min-width:52px;
+  padding:7px 10px;
+  line-height:1.2;
+}
+#plannerPage .study-plan-item.done{
+  border-color:#dceee3;
+  background:linear-gradient(135deg,#f2faf5,#f8fcf9);
+}
+#plannerPage .study-plan-item.done .plan-meta{
+  color:#63836e;
+}
+@media(max-width:360px){
+  #plannerPage .study-plan-item{gap:7px;padding:11px;}
+  #plannerPage .study-plan-item .plan-delete{min-width:46px;padding:7px 8px;}
+}
 </style>
 <style>
 #ttPortal,#ttTeacher{
