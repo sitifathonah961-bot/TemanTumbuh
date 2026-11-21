@@ -79,9 +79,11 @@ drop policy if exists "tt chat participants can send" on public.tt_chat_messages
 create policy "tt chat participants can send" on public.tt_chat_messages for insert to authenticated
 with check (
  sender_id=auth.uid()
- and public.tt_is_active_approved_teacher(teacher_id)
- and (auth.uid()=teacher_id or auth.uid()=student_id)
  and exists(select 1 from public.profiles s where s.id=student_id and s.role='siswa' and s.teacher_id=teacher_id)
+ and (
+   auth.uid()=student_id
+   or (auth.uid()=teacher_id and public.tt_is_active_approved_teacher(teacher_id))
+ )
 );
 
 drop policy if exists "tt chat recipient can mark read" on public.tt_chat_messages;
