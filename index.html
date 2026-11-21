@@ -1390,6 +1390,30 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
 #evaluationPage .choice-list{margin-bottom:16px;}
 #evaluationPage .form-note{margin-top:16px;}
 </style>
+
+<style id="temantumbuh-desktop-layout-v3">
+/* Perbaikan lebar desktop: kartu halaman belajar/refleksi/evaluasi wajib memenuhi area konten */
+@media (min-width: 900px){
+  .app{width:100%!important;max-width:1440px!important;margin:0 auto!important}
+  #learnPage>.page-title,#reflectPage>.page-title,#evaluationPage>.page-title{grid-column:1/-1!important;width:100%!important}
+  #learnPage>.card,#reflectPage>.card,#evaluationPage>.card{grid-column:1/-1!important;width:100%!important;max-width:none!important;min-width:0!important}
+  #learnPage>.card{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}
+  #learnPage>.card>.card-title,#learnPage>.card>.card-desc{grid-column:1/-1!important}
+  #learnPage .info-card{min-width:0!important;margin:0!important}
+  #reflectPage>.card{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}
+  #reflectPage>.card>.card-title,#reflectPage>.card>#savedReflection{grid-column:1/-1!important}
+  #reflectPage .tt-reflection-field{min-width:0!important;margin:0!important}
+  #reflectPage .tt-reflection-field textarea{width:100%!important;min-height:135px!important}
+  #evaluationPage>.card{display:block!important}
+  #evaluationPage .tt-evaluation-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}
+  #evaluationPage .tt-evaluation-field{min-width:0!important;margin:0!important}
+  #evaluationPage .tt-evaluation-field textarea{width:100%!important;min-height:135px!important}
+}
+@media(max-width:899px){
+  #learnPage>.card,#reflectPage>.card,#evaluationPage>.card{width:100%!important;max-width:none!important}
+}
+</style>
+
 </head>
 
 <body>
@@ -1942,6 +1966,18 @@ input:focus,textarea:focus,select:focus{border-color:#6d9dc8!important;box-shado
       <div class="tt-evaluation-field">
         <label class="eval-question" for="evalAnswer5">Dukungan seperti apa yang kamu harapkan dari Guru BK agar pengelolaan waktu dan kegiatan belajarmu menjadi lebih baik?</label>
         <textarea id="evalAnswer5" rows="4" placeholder="Tuliskan dukungan yang kamu butuhkan..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer6">Ceritakan pengalaman ketika kamu berhasil menyelesaikan tugas sesuai rencana. Apa yang membantumu?</label>
+        <textarea id="evalAnswer6" rows="4" placeholder="Ceritakan pengalaman dan hal yang membantumu..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer7">Bagian mana dari kebiasaan belajarmu yang masih ingin kamu tingkatkan dalam beberapa minggu ke depan?</label>
+        <textarea id="evalAnswer7" rows="4" placeholder="Tuliskan kebiasaan yang ingin kamu tingkatkan..."></textarea>
+      </div>
+      <div class="tt-evaluation-field">
+        <label class="eval-question" for="evalAnswer8">Seberapa yakin kamu dapat menerapkan strategi pengelolaan waktu yang sudah dipelajari? Jelaskan alasanmu.</label>
+        <textarea id="evalAnswer8" rows="4" placeholder="Jelaskan keyakinan dan hal yang masih kamu perlukan..."></textarea>
       </div>
     </div>
 
@@ -3108,7 +3144,7 @@ function nextTip(){
 
 function saveEvaluation(){
   const values = {};
-  for(let i=1;i<=5;i++){
+  for(let i=1;i<=8;i++){
     const answer=document.getElementById('evalAnswer'+i);
     values['q'+i]=answer?answer.value.trim():'';
   }
